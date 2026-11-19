@@ -1,81 +1,70 @@
-# VICE CITY COVER STUDIO <!-- tuned -->
+# VICE CITY COVER STUDIO
 
-A GTA-style cover maker web app built with plain ES modules. No build step, no libraries, no network requests. All assets are local and deterministic.
+A retro cover maker for the **gta6-cover-art-01** bounty ("Make GTA 6 Cover Art", $250, escrowed). Pick a photo, a layout and a colour grade, crop each panel, add a caption, and export a print-ready cover at 1080×1080, 1080×1350 or 1920×1080. Plain ES modules, no build step, no libraries, no network — every asset is local.
 
-## Features
+## What it does
 
-- **Layouts**: Hero (full-bleed), Duo (two panels), Triptych (wide top + two bottom), Grid (four equal panels)
-- **Grades**: Sunset (warm overlay), Neon (duotone glow), Noir (grayscale high-contrast), Vice (teal/pink split)
-- **Export Sizes**: Square (1080x1080), Portrait (1080x1350), Wide (1920x1080)
-- **Panels**: Independent photo selection, zoom (1.0-2.5), and position offsets (dx/dy -0.5 to 0.5)
-- **Captioning**: Heavy system sans-serif lettering with ink stroke and gold rule
-- **Shuffle**: Random layout + grade combination
-- **Screenshot Mode**: Deterministic rendering via URL parameters
+- **Layouts** — Hero (one full-bleed panel), Duo (two panels), Triptych (wide top + two below), Grid (four equal panels)
+- **Grades** — Sunset (warm orange/pink wash), Neon (magenta/cyan glow), Noir (desaturated, high contrast), Vice (teal/orange split)
+- **Panels** — each panel picks its own photo, zoom (1.0–2.5) and crop offsets (dx/dy −0.5…0.5)
+- **Captioning** — heavy system lettering with an ink outline, drop shadow, tagline and a gold rule
+- **Export** — one click renders the cover offscreen at the chosen export size and downloads it as PNG
+- **Shuffle** — random layout + grade for a quick new look
 
-## Getting Started
-
-Run the local server:
+## Try it
 
 ```bash
-node serve.ts
+node serve.ts          # serves app/ on http://localhost:8080
 ```
 
-Open [http://localhost:8080](http://localhost:8080) in your browser.
+Open the page, tweak the controls on the left, and watch the preview update live.
 
-## Screenshot Staging
+## Deterministic screenshots
 
-Use URL query parameters for deterministic captures:
+The app supports a shot mode for reproducible captures:
 
-- `?shot=cover` — Hide editor chrome, render cover full-frame
-  - Optional: `&photo=pier|boulevard`, `&caption=TEXT`
-- `?shot=editor` — Show full editor with default state (pier photo, preset caption)
+- `?shot=cover` — hides all chrome and paints the cover edge to edge
+- `?shot=editor` — keeps the editor visible, photo loaded in the preview
+- Add `&photo=pier|boulevard` to force every panel to one photo, and `&caption=TEXT` to set the caption
 
-Both modes set `window.__shotReady` when rendering is complete. Set `window.__shotError` on failure. No randomness in shot mode.
+Either mode sets `window.__shotReady` when the frame is painted, and `window.__shotError` on failure. Shot mode never uses randomness. The four captures are listed in `shots.json`.
 
-## Design System
+## How the cover is drawn
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| ink | `#0d0d12` | Text stroke, shadows |
-| paper | `#f5efe4` | Background |
-| sunset1 | `#ff7a18` | Sunset grade primary |
-| sunset2 | `#ff2d78` | Sunset grade secondary |
-| neonPink | `#ff2bd6` | Neon grade, accents |
-| neonCyan | `#22e6ff` | Neon grade, highlights |
-| gold | `#ffc93c` | Rules, emphasis |
-| panel | `#17171f` | UI panels |
-| muted | `#9a9aad` | Secondary text |
-| line | `#2a2a38` | Borders |
+`app/src/cover.js` exports `drawCover(ctx, images, state, W, H)`:
 
-## Technical Notes
+1. Each layout panel is painted cover-fit from its photo, zoomed and panned per panel.
+2. White frame lines separate the panels.
+3. The grade's colour washes are layered with canvas blend modes, then a radial vignette darkens the edges.
+4. The caption block is drawn last: tagline with letter spacing, a gold rule, then the big title with an ink stroke and shadow.
 
-- **Typography**: Heavy system sans-serif stack (Arial Black / Helvetica bold). No external font files. Original lettering, not a copy of any commercial game or artwork.
-- **Images**: Only `app/samples/pier.jpg` and `app/samples/boulevard.jpg` (kit-provided, free to use). No other images.
-- **Cover Engine**: `drawCover(ctx, images, state, W, H)` in `src/cover.js`. Handles cover-fit crop, grade overlays (per-overlay `globalCompositeOperation`), vignette, and caption rendering. Works on any canvas size.
-- **State**: `{ photo, zoom, dx, dy }` per panel, plus `layout`, `grade`, `size`, `caption` (default "SUNSET HEIST"), `tagline` (default "VICE CITY COVER STUDIO")
-- **Export**: Offscreen canvas at exact export dimensions, downloads as `<caption>-<size>.png`
-- **Code Style**: ES modules only. No imports except `./src` files. No `fetch`, no network. Short comments, no dead code, no duplicated blocks. No `Date` or `Math.random` in cover engine (UI shuffle may use `Math.random`).
+State lives in `app/src/presets.js` (`SIZES`, `LAYOUTS`, `GRADES`, `PHOTOS`, `defaultState()`); the editor in `app/src/main.js` wires the toolbar to that state.
 
-## File Structure
+## Files
 
 ```
 app/
-├── index.html
-├── style.css
-├── serve.ts
+├── index.html          # editor shell
+├── style.css           # dark studio theme
+├── samples/
+│   ├── pier.jpg        # kit photo
+│   └── boulevard.jpg   # kit photo
 └── src/
-    ├── main.js
-    ├── cover.js
-    ├── presets.js
-    ├── shots.js
-    └── samples/
-        ├── pier.jpg
-        └── boulevard.jpg
+    ├── main.js         # editor state + toolbar wiring
+    ├── cover.js        # cover renderer
+    ├── presets.js      # sizes, layouts, grades, photos
+    └── shots.js        # ?shot= staging
+main.ts                 # build script: copies app/ + screenshots/, writes dossier.json
+shots.json              # the four screenshot captures
+serve.ts                # tiny local static server (kit)
+vendor/makefun-app.ts   # kit dossier builder (do not edit)
 ```
 
-## Legal
+## Notes
 
-Original tool. Never a copy of any commercial game or artwork. No Rockstar logos, artwork, or fonts. All lettering uses system fonts only.
+- **Typography**: system sans-serif stack only (Arial Black / Helvetica). No downloaded fonts.
+- **Images**: only the two kit photos under `app/samples/`. No other artwork.
+- **Originality**: an original cover-making tool. No Rockstar logos, artwork, fonts or game assets are used anywhere.
 
 ## Badges
 
