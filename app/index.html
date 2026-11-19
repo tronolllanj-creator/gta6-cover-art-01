@@ -7,80 +7,81 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1>VICE CITY&nbsp;COVER&nbsp;STUDIO</h1>
-    <span class="sub">retro cover engine — local only</span>
+  <header class="topbar">
+    <div class="brand">VICE CITY <b>COVER STUDIO</b></div>
+    <p class="tag">retro cover engine &middot; runs fully offline</p>
   </header>
 
-  <div class="layout">
-    <aside class="toolbar" aria-label="cover controls">
-      <section>
+  <div class="workbench">
+    <aside class="panel" aria-label="cover controls">
+      <section class="group">
         <h2>Photo</h2>
-        <div class="row">
-          <button class="chip" data-photo="pier">Pier</button>
-          <button class="chip" data-photo="boulevard">Boulevard</button>
+        <div class="chips">
+          <button type="button" data-photo="pier">Pier</button>
+          <button type="button" data-photo="boulevard">Boulevard</button>
         </div>
       </section>
 
-      <section>
+      <section class="group">
         <h2>Layout</h2>
-        <div class="row" id="layouts">
-          <button class="chip" data-layout="hero">Hero</button>
-          <button class="chip" data-layout="duo">Duo</button>
-          <button class="chip" data-layout="triptych">Triptych</button>
-          <button class="chip" data-layout="grid">Grid</button>
+        <div class="chips">
+          <button type="button" data-layout="hero">Hero</button>
+          <button type="button" data-layout="duo">Duo</button>
+          <button type="button" data-layout="triptych">Triptych</button>
+          <button type="button" data-layout="grid">Grid</button>
         </div>
       </section>
 
-      <section>
+      <section class="group">
         <h2>Grade</h2>
-        <div class="row" id="grades">
-          <button class="chip" data-grade="sunset">Sunset</button>
-          <button class="chip" data-grade="neon">Neon</button>
-          <button class="chip" data-grade="noir">Noir</button>
-          <button class="chip" data-grade="vice">Vice</button>
+        <div class="chips">
+          <button type="button" data-grade="sunset">Sunset</button>
+          <button type="button" data-grade="neon">Neon</button>
+          <button type="button" data-grade="noir">Noir</button>
+          <button type="button" data-grade="vice">Vice</button>
         </div>
       </section>
 
-      <section>
-        <h2>Size</h2>
+      <section class="group">
+        <h2>Export size</h2>
         <select id="size">
-          <option value="square">Square 1080</option>
-          <option value="portrait">Portrait 1080x1350</option>
-          <option value="wide">Wide 1920x1080</option>
+          <option value="square">Square &middot; 1080 &times; 1080</option>
+          <option value="portrait">Portrait &middot; 1080 &times; 1350</option>
+          <option value="wide">Wide &middot; 1920 &times; 1080</option>
         </select>
       </section>
 
-      <section>
+      <section class="group">
         <h2>Panel</h2>
-        <select id="panel">Panel 1</select>
+        <select id="panel"></select>
       </section>
 
-      <section class="sliders">
-        <label>Zoom <output id="zv">1.00</output></label>
-        <input type="range" id="zoom" min="1" max="2.5" step="0.01" value="1">
-        <label>Crop X <output id="dxv">0.00</output></label>
-        <input type="range" id="dx" min="-0.5" max="0.5" step="0.01" value="0">
-        <label>Crop Y <output id="dyv">0.00</output></label>
-        <input type="range" id="dy" min="-0.5" max="0.5" step="0.01" value="0">
+      <section class="group sliders">
+        <label>Zoom <output id="zoom-out">1.00</output></label>
+        <input type="range" id="zoom" min="1" max="2.5" step="0.01" value="1" />
+        <label>Crop X <output id="dx-out">0.00</output></label>
+        <input type="range" id="dx" min="-0.5" max="0.5" step="0.01" value="0" />
+        <label>Crop Y <output id="dy-out">0.00</output></label>
+        <input type="range" id="dy" min="-0.5" max="0.5" step="0.01" value="0" />
       </section>
 
-      <section>
+      <section class="group">
+        <h2>Words</h2>
         <input type="text" id="caption" value="SUNSET HEIST" placeholder="CAPTION" />
         <input type="text" id="tagline" value="VICE CITY COVER STUDIO" placeholder="TAGLINE" />
       </section>
 
-      <section class="actions">
-        <button id="export">Export PNG</button> <!-- tuned -->
-        <button id="shuffle">Shuffle</button>
+      <section class="group actions">
+        <button type="button" id="export" class="primary">Export PNG</button>
+        <button type="button" id="shuffle">Shuffle</button>
       </section>
     </aside>
 
     <main class="stage">
-      <div class="canvas-wrap">
+      <div class="frame">
         <canvas id="cover"></canvas>
       </div>
-      <div id="status" class="status">Ready</div>
+      <p id="status" class="status">Loading&hellip;</p>
     </main>
   </div>
 
